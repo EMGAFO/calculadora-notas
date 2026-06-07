@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Calculadora de Promedios</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Nunito', sans-serif;
+    background: #f0f4ff;
+    min-height: 100vh;
+    padding: 0 0 40px;
+  }
+
+  header {
+    background: #4361ee;
+    color: white;
+    text-align: center;
+    padding: 28px 20px 22px;
+    border-radius: 0 0 28px 28px;
+    box-shadow: 0 4px 20px rgba(67,97,238,0.35);
+  }
+
+  header h1 {
+    font-size: 26px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+  }
+
+  header p {
+    font-size: 14px;
+    opacity: 0.85;
+    margin-top: 4px;
+    font-weight: 600;
+  }
+
+  .emoji-icon {
+    font-size: 42px;
+    display: block;
+    margin-bottom: 8px;
+  }
+
+  .container {
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 20px 16px;
+  }
+
+  .tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+
+  .tab-btn {
+    flex: 1;
+    padding: 14px 8px;
+    border-radius: 16px;
+    border: none;
+    font-family: 'Nunito', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: white;
+    color: #6b7280;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  }
+
+  .tab-btn.active {
+    background: #4361ee;
+    color: white;
+    box-shadow: 0 4px 14px rgba(67,97,238,0.4);
+    transform: translateY(-1px);
+  }
+
+  .tab-btn .num-badge {
+    display: inline-block;
+    background: rgba(255,255,255,0.25);
+    border-radius: 20px;
+    padding: 1px 8px;
+    font-size: 13px;
+    margin-right: 4px;
+  }
+
+  .tab-btn:not(.active) .num-badge {
+    background: #f0f4ff;
+    color: #4361ee;
+  }
+
+  .card {
+    background: white;
+    border-radius: 24px;
+    padding: 24px 20px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    margin-bottom: 16px;
+  }
+
+  .card-title {
+    font-size: 16px;
+    font-weight: 800;
+    color: #1f2937;
+    margin-bottom: 18px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .card-title .dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #4361ee;
+    display: inline-block;
+  }
+
+  .input-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 14px;
+  }
+
+  .input-label {
+    font-size: 14px;
+    font-weight: 700;
+    color: #4b5563;
+    min-width: 70px;
+    flex-shrink: 0;
+  }
+
+  input[type="number"] {
+    flex: 1;
+    height: 52px;
+    border: 2.5px solid #e5e7eb;
+    border-radius: 14px;
+    font-family: 'Nunito', sans-serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: #1f2937;
+    text-align: center;
+    padding: 0 12px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    outline: none;
+    -moz-appearance: textfield;
+    background: #f9fafb;
+    width: 100%;
+  }
+
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; }
+
+  input[type="number"]:focus {
+    border-color: #4361ee;
+    box-shadow: 0 0 0 4px rgba(67,97,238,0.12);
+    background: white;
+  }
+
+  input[type="number"].has-value {
+    border-color: #a5b4fc;
+    background: #eef2ff;
+  }
+
+  .calc-btn {
+    width: 100%;
+    height: 58px;
+    border-radius: 18px;
+    border: none;
+    background: linear-gradient(135deg, #4361ee, #7c3aed);
+    color: white;
+    font-family: 'Nunito', sans-serif;
+    font-size: 18px;
+    font-weight: 800;
+    cursor: pointer;
+    transition: all 0.2s;
+    box-shadow: 0 6px 20px rgba(67,97,238,0.4);
+    letter-spacing: 0.3px;
+    margin-top: 4px;
+  }
+
+  .calc-btn:active {
+    transform: scale(0.97);
+    box-shadow: 0 3px 10px rgba(67,97,238,0.3);
+  }
+
+  .result-card {
+    background: linear-gradient(135deg, #4361ee, #7c3aed);
+    border-radius: 24px;
+    padding: 24px 20px;
+    text-align: center;
+    display: none;
+    box-shadow: 0 8px 30px rgba(67,97,238,0.4);
+    margin-bottom: 16px;
+    animation: popIn 0.3s ease;
+  }
+
+  @keyframes popIn {
+    from { transform: scale(0.95); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+
+  .result-card.show { display: block; }
+
+  .result-label {
+    color: rgba(255,255,255,0.8);
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+
+  .result-number {
+    color: white;
+    font-size: 64px;
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -2px;
+  }
+
+  .result-status {
+    margin-top: 10px;
+    font-size: 18px;
+    font-weight: 700;
+    color: white;
+    padding: 6px 18px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 30px;
+    display: inline-block;
+  }
+
+  .result-detail {
+    margin-top: 12px;
+    color: rgba(255,255,255,0.75);
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .clear-btn {
+    width: 100%;
+    height: 48px;
+    border-radius: 14px;
+    border: 2px solid #e5e7eb;
+    background: white;
+    color: #6b7280;
+    font-family: 'Nunito', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+  }
+
+  .clear-btn:active {
+    background: #f3f4f6;
+  }
+
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  .tip-box {
+    background: #fffbeb;
+    border: 2px solid #fde68a;
+    border-radius: 16px;
+    padding: 14px 16px;
+    font-size: 13px;
+    color: #92400e;
+    font-weight: 600;
+    line-height: 1.5;
+    margin-bottom: 16px;
+  }
+
+  .tip-box strong {
+    display: block;
+    margin-bottom: 2px;
+    font-size: 14px;
+  }
+
+  .scale-info {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-top: 16px;
+  }
+
+  .scale-item {
+    border-radius: 12px;
+    padding: 10px 12px;
+    font-size: 12px;
+    font-weight: 700;
+    text-align: center;
+  }
+
+  .scale-item .range { font-size: 16px; font-weight: 800; display: block; }
+
+  .s-ex { background: #dcfce7; color: #15803d; }
+  .s-bien { background: #dbeafe; color: #1d4ed8; }
+  .s-regular { background: #fef9c3; color: #a16207; }
+  .s-mal { background: #fee2e2; color: #dc2626; }
+
+  .error-msg {
+    background: #fee2e2;
+    color: #dc2626;
+    border-radius: 12px;
+    padding: 12px 16px;
+    font-size: 14px;
+    font-weight: 700;
+    text-align: center;
+    display: none;
+    margin-bottom: 12px;
+  }
+
+  .error-msg.show { display: block; }
+</style>
+</head>
+<body>
+
+<header>
+  <span class="emoji-icon">📚</span>
+  <h1>Calculadora de Promedios</h1>
+  <p>Para profesoras — fácil y rápida</p>
+</header>
+
+<div class="container">
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="showTab(3)" id="tab3">
+      <span class="num-badge">3</span> Notas
+    </button>
+    <button class="tab-btn" onclick="showTab(4)" id="tab4">
+      <span class="num-badge">4</span> Notas
+    </button>
+  </div>
+
+  <!-- Panel 3 notas -->
+  <div class="panel active" id="panel3">
+    <div class="card">
+      <div class="card-title"><span class="dot"></span> Ingresa las 3 notas</div>
+      <div class="input-row">
+        <span class="input-label">Nota 1</span>
+        <input type="number" id="n3-1" min="0" max="10" step="0.01" placeholder="0.00" oninput="markFilled(this)" />
+      </div>
+      <div class="input-row">
+        <span class="input-label">Nota 2</span>
+        <input type="number" id="n3-2" min="0" max="10" step="0.01" placeholder="0.00" oninput="markFilled(this)" />
+      </div>
+      <div class="input-row">
+        <span class="input-label">Nota 3</span>
+        <input type="number" id="n3-3" min="0" max="10" step="0.01" placeholder="0.00" oninput="markFilled(this)" />
+      </div>
+      <div class="error-msg" id="err3">⚠️ Por favor llena todas las notas</div>
+      <button class="calc-btn" onclick="calcular(3)">✏️ Calcular Promedio</button>
+    </div>
+
+    <div class="result-card" id="res3">
+      <div class="result-label">Promedio de 3 notas</div>
+      <div class="result-number" id="res3-num">—</div>
+      <div class="result-status" id="res3-status"></div>
+      <div class="result-detail" id="res3-detail"></div>
+    </div>
+
+    <button class="clear-btn" onclick="limpiar(3)">🗑️ Limpiar notas</button>
+  </div>
+
+  <!-- Panel 4 notas -->
+  <div class="panel" id="panel4">
+    <div class="card">
+      <div class="card-title"><span class="dot"></span> Ingresa las 4 notas</div>
+      <div class="input-row">
+        <span class="input-label">Nota 1</span>
+        <input type="number" id="n4-1" min="0" max="10" step="0.01" placeholder="0.00" oninput="markFilled(this)" />
+      </div>
+      <div class="input-row">
+        <span class="input-label">Nota 2</span>
+        <input type="number" id="n4-2" min="0" max="10" step="0.01" placeholder="0.00" oninput="markFilled(this)" />
+      </div>
+      <div class="input-row">
+        <span class="input-label">Nota 3</span>
+        <input type="number" id="n4-3" min="0" max="10" step="0.01" placeholder="0.00" oninput="markFilled(this)" />
+      </div>
+      <div class="input-row">
+        <span class="input-label">Nota 4</span>
+        <input type="number" id="n4-4" min="0" max="10" step="0.01" placeholder="0.00" oninput="markFilled(this)" />
+      </div>
+      <div class="error-msg" id="err4">⚠️ Por favor llena todas las notas</div>
+      <button class="calc-btn" onclick="calcular(4)">✏️ Calcular Promedio</button>
+    </div>
+
+    <div class="result-card" id="res4">
+      <div class="result-label">Promedio de 4 notas</div>
+      <div class="result-number" id="res4-num">—</div>
+      <div class="result-status" id="res4-status"></div>
+      <div class="result-detail" id="res4-detail"></div>
+    </div>
+
+    <button class="clear-btn" onclick="limpiar(4)">🗑️ Limpiar notas</button>
+  </div>
+
+  <!-- Escala -->
+  <div class="card">
+    <div class="card-title"><span class="dot"></span> Escala de notas (0 – 10)</div>
+    <div class="scale-info">
+      <div class="scale-item s-ex"><span class="range">9 – 10</span>Excelente ⭐</div>
+      <div class="scale-item s-bien"><span class="range">7 – 8.9</span>Bueno 👍</div>
+      <div class="scale-item s-regular"><span class="range">5 – 6.9</span>Regular 📝</div>
+      <div class="scale-item s-mal"><span class="range">0 – 4.9</span>Reprobado ❌</div>
+    </div>
+  </div>
+
+  <div class="tip-box">
+    <strong>💡 Consejo</strong>
+    Puedes usar notas con decimales. Por ejemplo: 8.5 o 9.25. El promedio se muestra con 2 decimales.
+  </div>
+
+</div>
+
+<script>
+  function showTab(n) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    document.getElementById('tab' + n).classList.add('active');
+    document.getElementById('panel' + n).classList.add('active');
+  }
+
+  function markFilled(inp) {
+    if (inp.value !== '') inp.classList.add('has-value');
+    else inp.classList.remove('has-value');
+  }
+
+  function getStatus(avg) {
+    if (avg >= 9) return { label: '⭐ Excelente', detail: '¡Felicitaciones!' };
+    if (avg >= 7) return { label: '👍 Bueno', detail: 'Muy buen desempeño.' };
+    if (avg >= 5) return { label: '📝 Regular', detail: 'Puede mejorar.' };
+    return { label: '❌ Reprobado', detail: 'Necesita refuerzo.' };
+  }
+
+  function calcular(n) {
+    const errEl = document.getElementById('err' + n);
+    errEl.classList.remove('show');
+
+    let vals = [];
+    let allFilled = true;
+
+    for (let i = 1; i <= n; i++) {
+      const v = parseFloat(document.getElementById('n' + n + '-' + i).value);
+      if (isNaN(v)) { allFilled = false; break; }
+      vals.push(v);
+    }
+
+    if (!allFilled) {
+      errEl.classList.add('show');
+      return;
+    }
+
+    const sum = vals.reduce((a, b) => a + b, 0);
+    const avg = sum / n;
+    const avgRound = Math.round(avg * 100) / 100;
+    const { label, detail } = getStatus(avgRound);
+
+    document.getElementById('res' + n + '-num').textContent = avgRound.toFixed(2);
+    document.getElementById('res' + n + '-status').textContent = label;
+    document.getElementById('res' + n + '-detail').textContent = detail + ' Suma: ' + sum.toFixed(2) + ' ÷ ' + n;
+
+    const resCard = document.getElementById('res' + n);
+    resCard.classList.remove('show');
+    void resCard.offsetWidth;
+    resCard.classList.add('show');
+
+    resCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  function limpiar(n) {
+    for (let i = 1; i <= n; i++) {
+      const inp = document.getElementById('n' + n + '-' + i);
+      inp.value = '';
+      inp.classList.remove('has-value');
+    }
+    document.getElementById('res' + n).classList.remove('show');
+    document.getElementById('err' + n).classList.remove('show');
+  }
+</script>
+</body>
+</html>
